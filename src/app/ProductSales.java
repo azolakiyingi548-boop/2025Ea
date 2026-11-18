@@ -1,58 +1,73 @@
 package app;
 
-// Implements the interface: one separate method per calculation
-public class ProductSales implements IProduct {
+public class ProductSales implements IProductSales {
 
-    // Adds up every value in the 2D array
+    private static final int SALES_LIMIT = 500;   // retailer's success limit
+
+    // "Loaded from memory": rows = years, columns = Microphone, Speakers, Mixing Desk
+    private final int[][] productSales = {
+        {300, 150, 700},
+        {250, 200, 600}
+    };
+
     @Override
-    public int TotalSales(int[][] productSales) {
+    public int[][] GetProductSales() {
+        return productSales;
+    }
+
+    // Add up every value
+    @Override
+    public int GetTotalSales() {
         int total = 0;
-        for (int[] row : productSales) {      // each row = one year
-            for (int sale : row) {            // each value = one quarter
+        for (int[] row : productSales) {
+            for (int sale : row) {
                 total += sale;
             }
         }
         return total;
     }
 
-    // Total divided by the number of values (6 in this case)
+    // Count how many individual sales are above the limit
     @Override
-    public double AverageSales(int[][] productSales) {
+    public int GetSalesOverLimit() {
+        int count = 0;
+        for (int[] row : productSales) {
+            for (int sale : row) {
+                if (sale > SALES_LIMIT) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    // Count how many individual sales are below the limit
+    @Override
+    public int GetSalesUnderLimit() {
+        int count = 0;
+        for (int[] row : productSales) {
+            for (int sale : row) {
+                if (sale < SALES_LIMIT) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
+    // Years processed = number of rows in the array
+    @Override
+    public int GetProductsProcessed() {
+        return productSales.length;
+    }
+
+    // Total divided by how many values there are
+    @Override
+    public double GetAverageSales() {
         int count = 0;
         for (int[] row : productSales) {
             count += row.length;
         }
-        if (count == 0) {
-            return 0;                         // avoid dividing by zero
-        }
-        return (double) TotalSales(productSales) / count;
-    }
-
-    // Start with the first value, replace it whenever something bigger is found
-    @Override
-    public int MaxSale(int[][] productSales) {
-        int max = productSales[0][0];
-        for (int[] row : productSales) {
-            for (int sale : row) {
-                if (sale > max) {
-                    max = sale;
-                }
-            }
-        }
-        return max;
-    }
-
-    // Same idea as max, but looking for smaller values
-    @Override
-    public int MinSale(int[][] productSales) {
-        int min = productSales[0][0];
-        for (int[] row : productSales) {
-            for (int sale : row) {
-                if (sale < min) {
-                    min = sale;
-                }
-            }
-        }
-        return min;
+        return (double) GetTotalSales() / count;
     }
 }
